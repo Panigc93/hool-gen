@@ -124,11 +124,9 @@
         <p class="text-center text-gray-400 mb-4">Introduce un prompt o genera uno aleatorio para crear imágenes con
             temática hooligan y estética de ilustración.</p>
 
-        <!-- Textarea para el prompt -->
         <textarea id="prompt-input" rows="4" placeholder="Ej: Graffiti de un aficionado con una bandera"
             class="w-full p-4 rounded-xl bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 mb-4"></textarea>
 
-        <!-- Botones de acción -->
         <div class="flex flex-col sm:flex-row flex-wrap gap-4 w-full justify-center">
             <button id="generate-btn" class="btn btn-primary w-full sm:w-auto drop-shadow-lg">Generar Imagen</button>
             <button id="random-btn" class="btn btn-secondary w-full sm:w-auto drop-shadow-lg">Generar Prompt
@@ -142,28 +140,23 @@
         <button id="retry-btn" class="btn btn-retry w-full sm:w-auto drop-shadow-lg hidden">🔄 Rehacer Imagen</button>
 
 
-        <!-- Contenedor de la imagen y el spinner -->
         <div id="image-output-section" class="mt-8 w-full">
             <div id="image-container"
                 class="w-full min-h-[300px] flex items-center justify-center bg-gray-700 rounded-xl border border-gray-600 shadow-inner">
                 <p id="placeholder-text" class="text-gray-400">Tu imagen aparecerá aquí</p>
                 <div id="spinner" class="hidden spinner"></div>
             </div>
-            <!-- Botones de guardar, inicialmente ocultos -->
             <div id="save-button-wrapper" class="mt-4 flex justify-center gap-4 hidden">
                 <button id="save-local-btn" class="btn-local">💾 Guardar Localmente</button>
                 <button id="save-cloud-btn" class="btn-cloud">☁️ Guardar en la Nube (Firestore)</button>
             </div>
         </div>
 
-        <!-- Mensaje de error (usado también para éxito) -->
         <p id="error-message" class="text-red-500 text-center mt-4 hidden"></p>
 
-        <!-- Galería de Imágenes Guardadas -->
         <div class="mt-10 w-full pt-6 border-t border-gray-700">
             <h2 class="text-2xl font-bold mb-4">Galería de Imágenes Guardadas (Local)</h2>
             <div id="gallery-container" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                <!-- Las imágenes guardadas se cargarán aquí -->
             </div>
             <p id="gallery-placeholder" class="text-gray-400 text-center mt-4">Aún no hay imágenes guardadas. ¡Genera y
                 guarda la primera!</p>
