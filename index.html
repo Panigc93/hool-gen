@@ -1,0 +1,710 @@
+<!DOCTYPE ahtml>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Imágenes Hooligan de Fútbol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+        /* AÑADIDO: Forzar altura 100% para HTML y BODY */
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212;
+            /* Se mantiene min-h-screen para cuando el contenido es menor que la pantalla */
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        /* Estilos de los botones principales (Altos y Redondeados) */
+        .btn {
+            @apply flex items-center justify-center px-8 text-xl font-bold transition-all duration-300 transform hover:scale-105 active:scale-95 text-white shadow-lg;
+            padding: .5rem 1rem;
+            /* Altura fija para un cambio notable */
+            border-radius: 9999px;
+            /* Borde muy redondo */
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+        }
+
+        /* Estilos del botón secundario/morado (Generar Prompt) */
+        .btn-secondary {
+            background: linear-gradient(135deg, #6d28d9, #4c1d95);
+            /* De azul a morado */
+            box-shadow: 0 4px 15px rgba(109, 40, 217, 0.4);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(109, 40, 217, 0.6);
+        }
+
+        /* Estilos del nuevo botón terciario (Mejorar Prompt) - Rosa */
+        .btn-tertiary {
+            background: linear-gradient(135deg, #ec4899, #db2777);
+            /* Rosa/Magenta */
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
+        }
+
+        .btn-tertiary:hover {
+            box_shadow: 0 6px 20px rgba(236, 72, 153, 0.6);
+        }
+
+        /* Estilos del nuevo botón cuarto (Sticker/Logo) - Cyan/Teal */
+        .btn-fourth {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+        }
+
+        .btn-fourth:hover {
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.6);
+        }
+
+        /* Estilos del nuevo botón quinto (Fotorrealismo) - Verde */
+        .btn-fifth {
+            background: linear-gradient(135deg, #4ade80, #16a34a);
+            box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
+        }
+
+        .btn-fifth:hover {
+            box-shadow: 0 6px 20px rgba(74, 222, 128, 0.6);
+        }
+
+        /* Estilos del botón pequeño de Guardar Local (Verde Claro) */
+        .btn-local {
+            @apply flex items-center justify-center px-4 py-2 text-base font-bold transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98] text-white shadow-md rounded-full;
+            background: linear-gradient(135deg, #34d399, #10b981);
+        }
+
+        /* Estilos del botón pequeño de Guardar en Nube (Verde Oscuro) */
+        .btn-cloud {
+            @apply flex items-center justify-center px-4 py-2 text-base font-bold transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98] text-white shadow-md rounded-full;
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen  p-4">
+    <div
+        class="container bg-gray-800 rounded-xl shadow-2xl p-8 md:p-12 flex flex-col items-center gap-6 border border-gray-700">
+        <h1 class="text-3xl md:text-4xl font-bold text-center mb-2">Generadr de Imágenes Hooligan de Fútbol</h1>
+        <p class="text-center text-gray-400 mb-4">Introduc un prompt o genera uno aleatorio para crear imágenes con
+            temática hooligan y estética de ilustración.</p>
+
+        <!-- Textarea para el prompt -->
+        <textarea id="prompt-input" rows="4" placeholder="Ej: Graffiti de un aficionado con una bandera"
+            class="w-full p-4 rounded-xl bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 mb-4"></textarea>
+
+        <!-- Botones de acción -->
+        <div class="flex flex-col sm:flex-row flex-wrap gap-4 w-full justify-center">
+            <button id="generate-btn" class="btn btn-primary w-full sm:w-auto drop-shadow-lg">Generar Imagen</button>
+            <button id="random-btn" class="btn btn-secondary w-full sm:w-auto drop-shadow-lg">Generar Prompt
+                Aleatorio</button>
+            <button id="improve-btn" class="btn btn-tertiary w-full sm:w-auto drop-shadow-lg">Mejorar Prompt</button>
+            <button id="sticker-btn" class="btn btn-fourth w-full sm:w-auto drop-shadow-lg">Generar
+                Sticker/Logo</button>
+            <button id="photorealism-btn" class="btn btn-fifth w-full sm:w-auto drop-shadow-lg">Generar
+                Fotorrealismo</button>
+        </div>
+
+        <!-- Contenedor de la imagen y el spinner -->
+        <div id="image-output-section" class="mt-8 w-full">
+            <div id="image-container"
+                class="w-full min-h-[300px] flex items-center justify-center bg-gray-700 rounded-xl border border-gray-600 shadow-inner">
+                <p id="placeholder-text" class="text-gray-400">Tu imagen aparecerá aquí</p>
+                <div id="spinner" class="hidden spinner"></div>
+            </div>
+            <!-- Botones de guardar, inicialmente ocultos -->
+            <div id="save-button-wrapper" class="mt-4 flex justify-center gap-4 hidden">
+                <button id="save-local-btn" class="btn-local">💾 Guardar Localmente</button>
+                <button id="save-cloud-btn" class="btn-cloud">☁️ Guardar en la Nube (Firestore)</button>
+            </div>
+        </div>
+
+        <!-- Mensaje de error (usado también para éxito) -->
+        <p id="error-message" class="text-red-500 text-center mt-4 hidden"></p>
+
+        <!-- Galería de Imágenes Guardadas -->
+        <div class="mt-10 w-full pt-6 border-t border-gray-700">
+            <h2 class="text-2xl font-bold mb-4">Galería de Imágenes Guardadas (Local)</h2>
+            <div id="gallery-container" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <!-- Las imágenes guardadas se cargarán aquí -->
+            </div>
+            <p id="gallery-placeholder" class="text-gray-400 text-center mt-4">Aún no hay imágenes guardadas. ¡Genera y
+                guarda la primera!</p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Variables globales (solo appId necesario para la clave de localStorage)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // --- VARIABLE DE ENTORNO COMÚN PARA LA API KEY ---
+        // Se establece como cadena vacía para usar la clave proporcionada por el entorno Canvas.
+        // Cambiar la URL de la API por:
+        const apiUrl = '/api/generate';  // Ruta relativa a tu dominio de Pages
+
+
+
+        // --- ESTILOS DE IMAGEN ---
+        const BASE_STYLE = " illustration, comic book style, highly detailed, dynamic lighting, hooligan culture, grunge texture, thick black outlines, high contrast, vibrant colors, dominant colors: red and white, street art style.";
+        const STICKER_STYLE = " vector sticker illustration, high saturation, thick black tattoo outlines, clean lines, vibrant colors, limited color palette, primary colors: red and white, street art style, patch design, centered composition, hooligan theme, no photorealism.";
+        const PHOTOREALISM_STYLE = " photorealistic, cinematic lighting, 8k, highly detailed, ultra-realistic texture, DSLR photo, high contrast, film grain, gritty, dramatic, dominant colors: red and white, hooligan theme.";
+
+
+        // --- FIREBASE IMPORTS ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        setLogLevel('debug'); // Mantenemos el logging
+
+        // Elementos del DOM
+        const promptInput = document.getElementById('prompt-input');
+        const generateBtn = document.getElementById('generate-btn');
+        const randomBtn = document.getElementById('random-btn');
+        const improveBtn = document.getElementById('improve-btn');
+        const stickerBtn = document.getElementById('sticker-btn');
+        const photorealismBtn = document.getElementById('photorealism-btn');
+        const imageContainer = document.getElementById('image-container');
+        const placeholderText = document.getElementById('placeholder-text');
+        const spinner = document.getElementById('spinner');
+        const errorMessage = document.getElementById('error-message');
+        const saveButtonWrapper = document.getElementById('save-button-wrapper');
+        const saveLocalBtn = document.getElementById('save-local-btn');
+        const saveCloudBtn = document.getElementById('save-cloud-btn');
+        const galleryContainer = document.getElementById('gallery-container');
+        const galleryPlaceholder = document.getElementById('gallery-placeholder');
+
+        // Estado de la aplicación
+        let app;
+        let auth;
+        let db;
+        let userId = null;
+        let currentGeneratedImage = null;
+        let currentPrompt = null;
+
+        // Clave única para localStorage
+        const STORAGE_KEY = `hooligan_gallery_${appId}`;
+
+        // --- FIREBASE INITIALIZATION & AUTH ---
+
+        if (firebaseConfig) {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            // Intentar autenticación
+            onAuthStateChanged(auth, async (user) => {
+                if (!user) {
+                    if (initialAuthToken) {
+                        try {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } catch (error) {
+                            console.error('Error al autenticarse con token personalizado, intentando anónimo:', error);
+                            await signInAnonymously(auth);
+                        }
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                }
+                if (auth.currentUser) {
+                    userId = auth.currentUser.uid;
+                    console.log(`[AUTH SUCCESS] User ID established for Cloud Save: ${userId}`);
+                }
+            });
+        } else {
+            console.warn('Firebase config is missing. Cloud Save is disabled.');
+        }
+
+        // Cargar galería local al inicio
+        window.onload = loadGallery;
+
+        // --- GALLERY / LOCAL STORAGE FUNCTIONS (Mantenidas como principal) ---
+
+        /**
+         * Muestra un mensaje temporal al usuario (puede ser de éxito o error).
+         */
+        function showTemporaryMessage(text, isError = false) {
+            errorMessage.textContent = text;
+            errorMessage.classList.remove('hidden');
+            errorMessage.classList.toggle('text-red-500', isError);
+            errorMessage.classList.toggle('text-green-500', !isError);
+
+            setTimeout(() => {
+                errorMessage.classList.add('hidden');
+            }, 3000);
+        }
+
+
+        /**
+         * Guarda la imagen generada en localStorage.
+         */
+        async function saveImageLocal(prompt, base64Image) {
+            try {
+                const storedImages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+                storedImages.push({
+                    prompt: prompt,
+                    image: base64Image,
+                    createdAt: Date.now()
+                });
+
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(storedImages));
+
+                saveButtonWrapper.classList.add('hidden');
+                showTemporaryMessage('¡Imagen guardada localmente!');
+                console.log(`[SAVE SUCCESS] Image saved to localStorage.`);
+                loadGallery();
+            } catch (error) {
+                console.error('[SAVE FAILED] Error al guardar la imagen en localStorage:', error);
+                showTemporaryMessage('Error al guardar la imagen. (Almacenamiento lleno?)', true);
+            }
+        }
+
+        /**
+         * Guarda la imagen en Firebase Firestore (Sujeto al límite de 1MB).
+         */
+        async function saveImageCloud(prompt, base64Image) {
+            if (!userId || !db) {
+                showTemporaryMessage('Error: Autenticación o base de datos de la nube no lista.', true);
+                console.error('[CLOUD SAVE FAILED] Auth or DB not ready.');
+                return;
+            }
+
+            // Advertencia Visible
+            showTemporaryMessage('Guardando en la Nube... (Sujeto al límite de 1MB de Firestore)', false);
+
+            try {
+                const collectionPath = `/artifacts/${appId}/users/${userId}/images`;
+                await addDoc(collection(db, collectionPath), {
+                    prompt: prompt,
+                    image: base64Image,
+                    createdAt: serverTimestamp()
+                });
+                // Esto no se ejecutará si falla el límite de tamaño (como esperamos), pero es el camino de éxito.
+                showTemporaryMessage('Imagen guardada en la Nube (Firebase).', false);
+                console.log(`[CLOUD SAVE SUCCESS] Document added.`);
+            } catch (error) {
+                console.error('[CLOUD SAVE FAILED] Error al guardar en la nube (Firestore):', error);
+                showTemporaryMessage(`¡Error en la Nube! (Límite de 1MB excedido). Usa Guardar Localmente.`, true);
+            }
+        }
+
+
+        /**
+         * Carga la galería usando localStorage.
+         */
+        function loadGallery() {
+            try {
+                const storedImages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+                galleryContainer.innerHTML = '';
+
+                storedImages.sort((a, b) => b.createdAt - a.createdAt);
+
+                if (storedImages.length === 0) {
+                    galleryPlaceholder.classList.remove('hidden');
+                } else {
+                    galleryPlaceholder.classList.add('hidden');
+                    storedImages.forEach(img => {
+                        const wrapper = document.createElement('div');
+                        wrapper.classList.add('aspect-square', 'overflow-hidden', 'rounded-lg', 'shadow-xl');
+
+                        const imgElement = document.createElement('img');
+                        imgElement.src = img.image;
+                        imgElement.alt = img.prompt;
+                        imgElement.title = img.prompt;
+                        imgElement.classList.add('w-full', 'h-full', 'object-cover', 'cursor-pointer', 'transition-transform', 'duration-200', 'hover:scale-105');
+
+                        wrapper.appendChild(imgElement);
+                        galleryContainer.appendChild(wrapper);
+                    });
+                    console.log(`[GALLERY SUCCESS] Loaded ${storedImages.length} images from localStorage.`);
+                }
+            } catch (error) {
+                console.error("[GALLERY LOAD ERROR] Error loading gallery from localStorage: ", error);
+                showTemporaryMessage('Error al cargar la galería de imágenes del navegador.', true);
+            }
+        }
+
+        // --- PROMPT UTILITY FUNCTIONS ---
+
+        /**
+         * Limpia el prompt de cualquier estilo conocido y luego aplica uno nuevo.
+         */
+        function injectStyle(prompt, style) {
+            const allStyles = [BASE_STYLE, STICKER_STYLE, PHOTOREALISM_STYLE];
+            let cleanedPrompt = prompt;
+
+            allStyles.forEach(s => {
+                // Limpia el prompt de estilos existentes
+                cleanedPrompt = cleanedPrompt.replace(s.trim(), '').trim();
+            });
+
+            cleanedPrompt = cleanedPrompt.trim();
+            cleanedPrompt = cleanedPrompt.replace(/,$/, '').trim();
+
+            if (!cleanedPrompt) {
+                cleanedPrompt = "A fan with a scarf";
+            }
+
+            return cleanedPrompt + ", " + style.trim(); // Asegura una coma y espacio
+        }
+
+        // --- GEMINI API UTILITY: Fetch con reintentos para manejar Rate Limits (429) ---
+
+        /**
+         * Realiza una llamada a la API con reintentos y backoff exponencial para manejar
+         * errores 429 (Rate Limit).
+         * @param {string} url - URL del endpoint de la API.
+         * @param {object} options - Opciones de la llamada fetch (method, headers, body).
+         * @param {number} maxRetries - Número máximo de reintentos.
+         * @returns {Promise<Response>} La respuesta de la API.
+         */
+        async function fetchWithRetry(url, options, maxRetries = 3) {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+
+                    if (response.status === 429 && i < maxRetries - 1) {
+                        const delay = Math.pow(2, i) * 1000 + (Math.random() * 1000); // 1s, 2s, 4s + jitter
+                        console.warn(`[API RETRY] Límite de tasa alcanzado (429). Reintentando en ${Math.round(delay / 1000)}s...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        continue; // Intentar de nuevo
+                    }
+
+                    if (!response.ok && response.status === 429) {
+                        // En caso de fallo 429 persistente o con cuota cero, reportar el error final
+                        const errorBody = await response.text();
+                        console.error(`[API ERROR FINAL] Status ${response.status}`, errorBody);
+                        throw new Error(`Error ${response.status}: Cuota de API agotada o límite de tasa excedido.`);
+                    }
+
+                    return response; // Retornar en caso de éxito o error no relacionado con 429
+                } catch (error) {
+                    // Manejar errores de red/conexión
+                    console.error(`[API NETWORK ERROR] Intento ${i + 1} fallido:`, error);
+                    if (i < maxRetries - 1) {
+                        const delay = Math.pow(2, i) * 1000 + (Math.random() * 1000);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        continue;
+                    }
+                    throw error; // Lanzar después del fallo final
+                }
+            }
+            throw new Error("La llamada a la API falló después de múltiples reintentos.");
+        }
+
+
+        // --- GEMINI API FUNCTIONS (Generación de Imagen actualizada) ---
+
+        function showLoading(show) {
+            generateBtn.disabled = show;
+            randomBtn.disabled = show;
+            improveBtn.disabled = show;
+            stickerBtn.disabled = show;
+            photorealismBtn.disabled = show;
+
+            if (show) {
+                saveButtonWrapper.classList.add('hidden');
+                imageContainer.innerHTML = '';
+                imageContainer.appendChild(spinner);
+            }
+
+            spinner.classList.toggle('hidden', !show);
+            placeholderText.classList.toggle('hidden', show);
+
+            errorMessage.classList.add('hidden');
+            errorMessage.classList.remove('text-green-500', 'text-red-500');
+        }
+
+        async function generateImage(prompt) {
+            showLoading(true);
+            currentPrompt = prompt;
+            currentGeneratedImage = null;
+
+            try {
+                const payload = {
+                    contents: [{
+                        parts: [{ text: prompt }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ['TEXT', 'IMAGE']
+                    },
+                    modelType: 'image' // Indicador para el backend
+                };
+
+                // Uso de la variable global API_KEY
+
+                const response = await fetchWithRetry(apiUrl, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    console.error(`[IMAGE API ERROR] Status ${response.status}`, errorBody);
+                    // Mostrar mensaje de cuota o error genérico
+                    showTemporaryMessage(`Error API de Imagen (${response.status}). Posiblemente Cuota Agotada. Inténtalo de nuevo.`, true);
+                    showLoading(false); return;
+                }
+
+                const result = await response.json();
+                const base64Data = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+
+                if (base64Data) {
+                    const imageUrl = `data:image/png;base64,${base64Data}`;
+
+                    currentGeneratedImage = imageUrl;
+
+                    saveButtonWrapper.classList.remove('hidden');
+                    console.log('[SAVE BUTTON] Botones de Guardar mostrados.');
+
+                    const imgElement = new Image();
+                    imgElement.src = imageUrl;
+
+                    imgElement.onerror = () => {
+                        console.error("[IMAGE RENDER ERROR] Error al cargar la imagen Base64.");
+                        showTemporaryMessage('Error al cargar la imagen generada. Inténtalo de nuevo.', true);
+                        showLoading(false);
+                    };
+
+                    imgElement.onload = () => {
+                        imageContainer.innerHTML = '';
+                        imgElement.classList.add('w-full', 'h-full', 'object-contain', 'rounded-xl', 'transition-opacity', 'duration-500', 'opacity-0');
+                        imageContainer.appendChild(imgElement);
+                        setTimeout(() => imgElement.classList.remove('opacity-0'), 100);
+
+                        showLoading(false);
+                    };
+
+                    imageContainer.innerHTML = '';
+                    imageContainer.appendChild(imgElement);
+
+                } else {
+                    console.error('[IMAGE API RESPONSE] Respuesta de imagen inválida:', result);
+                    showTemporaryMessage('No se pudo generar la imagen. Inténtalo de nuevo.', true);
+                    showLoading(false);
+                }
+            } catch (error) {
+                console.error('[IMAGE NETWORK ERROR] Error al generar la imagen:', error);
+                showTemporaryMessage('Hubo un error de red o de cuota. Por favor, inténtalo de nuevo.', true);
+                showLoading(false);
+            }
+        }
+
+        async function generateRandomPrompt() {
+            showLoading(true);
+            try {
+                const systemPrompt = "You are an expert in hooligan football culture and illustration aesthetics. Generate a list of 5 high-quality prompts in ENGLISH for generating images in this style.";
+                const userQuery = "Generate 5 prompts with a grunge and cartoon aesthetic. Include elements like flares, tifos, scarves, drums, graffiti, and banners.";
+
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: { type: "ARRAY", items: { "type": "STRING" } }
+                    },
+                    modelType: 'text' // Indicador para el backend
+                };
+
+                const response = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    console.error(`[PROMPT API ERROR] Status ${response.status}`, errorBody);
+                    showTemporaryMessage(`Error al generar prompt (${response.status}). Inténtalo de nuevo.`, true);
+                    showLoading(false); return;
+                }
+
+                const result = await response.json();
+                const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (text) {
+                    try {
+                        const prompts = JSON.parse(text);
+                        if (Array.isArray(prompts) && prompts.length > 0) {
+                            const randomIndex = Math.floor(Math.random() * prompts.length);
+                            const randomPromptIdea = prompts[randomIndex].trim();
+
+                            const fullPrompt = injectStyle(randomPromptIdea, BASE_STYLE);
+                            promptInput.value = fullPrompt;
+                            generateImage(fullPrompt);
+                        } else {
+                            showTemporaryMessage('No se pudieron generar prompts válidos.', true); showLoading(false);
+                        }
+                    } catch (e) {
+                        console.error('[PROMPT PARSE ERROR] Error al analizar la respuesta JSON:', e); showTemporaryMessage('Hubo un problema al procesar los prompts. Inténtalo de nuevo.', true); showLoading(false);
+                    }
+                } else {
+                    showTemporaryMessage('No se recibieron prompts del generador.', true); showLoading(false);
+                }
+            } catch (error) {
+                console.error('[PROMPT NETWORK ERROR] Error al generar prompts:', error); showTemporaryMessage('Hubo un error de red al generar prompts. Por favor, inténtalo de nuevo.', true); showLoading(false);
+            }
+        }
+
+        async function improvePrompt() {
+            const originalPrompt = promptInput.value.trim();
+            if (!originalPrompt) { showTemporaryMessage('Por favor, introduce un prompt para mejorarlo.', true); return; }
+            showLoading(true);
+
+            try {
+                const systemPrompt = "You are an expert in prompt engineering for text-to-image models. Your goal is to take a simple prompt about 'hooligan' football culture and refine it by adding style details (like 'cartoon illustration, grunge, thick line, high texture, vibrant colors, dramatic lighting, dominant colors: red and white') and camera or composition specifics, so that the image result is spectacular and follows the hooligan and grunge aesthetic. Return ONLY the improved prompt in ENGLISH.";
+                const userQuery = `Improve this prompt: "${originalPrompt}"`;
+                // Uso de la variable global API_KEY
+
+                const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
+
+                const response = await fetchWithRetry(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+
+                if (!response.ok) {
+                    const errorBody = await response.text(); console.error(`[IMPROVE API ERROR] Status ${response.status}`, errorBody); showTemporaryMessage(`Error API (${response.status}). Inténtalo de nuevo.`, true); showLoading(false); return;
+                }
+
+                const result = await response.json();
+                const refinedText = result?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+
+                if (refinedText) {
+                    promptInput.value = refinedText.replace(/^"|"$/g, '');
+                    showTemporaryMessage('¡Prompt mejorado con éxito!', false);
+                } else {
+                    showTemporaryMessage('No se pudo refinar el prompt.', true);
+                }
+
+            } catch (error) {
+                console.error('[IMPROVE NETWORK ERROR] Error al mejorar el prompt:', error); showTemporaryMessage('Hubo un error de red al refinar el prompt.', true);
+            }
+
+            spinner.classList.add('hidden');
+            generateBtn.disabled = false; randomBtn.disabled = false; improveBtn.disabled = false; stickerBtn.disabled = false; photorealismBtn.disabled = false;
+        }
+
+        async function generateStickerIdea() {
+            try {
+                const systemPrompt = "You are an expert in hooligan football culture illustration and sticker design. Generate ONE unique and visually powerful design concept for a sticker or patch. The concept should describe a composition of 2-3 elements related to hooligans, creating a symbolic scene (example: 'A skull with a scarf blowing in the wind and a smoking flare'). Return ONLY the concept phrase in ENGLISH, without styles or quotes.";
+                const userQuery = "Generate a unique sticker concept for hooligan football.";
+                // Uso de la variable global API_KEY
+
+                const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
+
+                const response = await fetchWithRetry(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+
+                if (!response.ok) { return "Smoke bomb with a football shield and a pair of gloved hands"; }
+
+                const result = await response.json();
+                const ideaText = result?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+
+                return ideaText ? ideaText.replace(/^"|"$/g, '') : "Smoke bomb with a football shield and a pair of gloved hands";
+            } catch (error) {
+                return "Smoke bomb with a football shield and a pair of gloved hands";
+            }
+        }
+
+        async function handleGenerateStickerClick() {
+            let prompt = promptInput.value.trim();
+            showLoading(true);
+
+            if (!prompt || prompt.includes(BASE_STYLE.trim()) || prompt.includes(PHOTOREALISM_STYLE.trim())) {
+                // If current prompt is generic or uses another style, generate a new idea
+                prompt = await generateStickerIdea();
+            }
+
+            const finalPrompt = injectStyle(prompt, STICKER_STYLE);
+            promptInput.value = finalPrompt;
+            generateImage(finalPrompt);
+        }
+
+        async function handleGeneratePhotorealismClick() {
+            let prompt = promptInput.value.trim();
+            if (!prompt) { showTemporaryMessage('Por favor, introduce un prompt para aplicar el estilo fotorrealista.', true); return; }
+
+            const finalPrompt = injectStyle(prompt, PHOTOREALISM_STYLE);
+            promptInput.value = finalPrompt;
+            generateImage(finalPrompt);
+        }
+
+        // --- EVENT LISTENERS ---
+
+        generateBtn.addEventListener('click', () => {
+            let prompt = promptInput.value.trim();
+            if (!prompt) { showTemporaryMessage('Por favor, introduce un prompt para generar la imagen.', true); return; }
+
+            // Apply base style if no specific style is present
+            if (!prompt.includes(BASE_STYLE.trim()) && !prompt.includes(STICKER_STYLE.trim()) && !prompt.includes(PHOTOREALISM_STYLE.trim())) {
+                prompt = injectStyle(prompt, BASE_STYLE);
+                promptInput.value = prompt;
+            }
+
+            generateImage(prompt);
+        });
+
+        randomBtn.addEventListener('click', generateRandomPrompt);
+        improveBtn.addEventListener('click', improvePrompt);
+        stickerBtn.addEventListener('click', handleGenerateStickerClick);
+        photorealismBtn.addEventListener('click', handleGeneratePhotorealismClick);
+
+        // Event listener para el botón de "Guardar Localmente"
+        saveLocalBtn.addEventListener('click', () => {
+            if (currentGeneratedImage && currentPrompt) {
+                saveImageLocal(currentPrompt, currentGeneratedImage);
+            } else {
+                showTemporaryMessage('No hay imagen generada para guardar.', true);
+            }
+        });
+
+        // Event listener para el botón de "Guardar en la Nube"
+        saveCloudBtn.addEventListener('click', () => {
+            if (currentGeneratedImage && currentPrompt) {
+                saveImageCloud(currentPrompt, currentGeneratedImage);
+            } else {
+                showTemporaryMessage('No hay imagen generada para guardar.', true);
+            }
+        });
+    </script>
+</body>
+
+</html>
