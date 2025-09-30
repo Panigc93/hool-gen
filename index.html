@@ -9,7 +9,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
-        /* AÑADIDO: Forzar altura 100% para HTML y BODY */
         html,
         body {
             height: 100%;
@@ -18,7 +17,6 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #121212;
-            /* Se mantiene min-h-screen para cuando el contenido es menor que la pantalla */
         }
 
         .container {
@@ -27,13 +25,10 @@
             padding: 2rem;
         }
 
-        /* Estilos de los botones principales (Altos y Redondeados) */
         .btn {
             @apply flex items-center justify-center px-8 text-xl font-bold transition-all duration-300 transform hover:scale-105 active:scale-95 text-white shadow-lg;
             padding: .5rem 1rem;
-            /* Altura fija para un cambio notable */
             border-radius: 9999px;
-            /* Borde muy redondo */
         }
 
         .btn-primary {
@@ -45,10 +40,8 @@
             box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
         }
 
-        /* Estilos del botón secundario/morado (Generar Prompt) */
         .btn-secondary {
             background: linear-gradient(135deg, #6d28d9, #4c1d95);
-            /* De azul a morado */
             box-shadow: 0 4px 15px rgba(109, 40, 217, 0.4);
         }
 
@@ -56,18 +49,15 @@
             box-shadow: 0 6px 20px rgba(109, 40, 217, 0.6);
         }
 
-        /* Estilos del nuevo botón terciario (Mejorar Prompt) - Rosa */
         .btn-tertiary {
             background: linear-gradient(135deg, #ec4899, #db2777);
-            /* Rosa/Magenta */
             box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
         }
 
         .btn-tertiary:hover {
-            box_shadow: 0 6px 20px rgba(236, 72, 153, 0.6);
+            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.6);
         }
 
-        /* Estilos del nuevo botón cuarto (Sticker/Logo) - Cyan/Teal */
         .btn-fourth {
             background: linear-gradient(135deg, #06b6d4, #0891b2);
             box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
@@ -77,7 +67,6 @@
             box-shadow: 0 6px 20px rgba(6, 182, 212, 0.6);
         }
 
-        /* Estilos del nuevo botón quinto (Fotorrealismo) - Verde */
         .btn-fifth {
             background: linear-gradient(135deg, #4ade80, #16a34a);
             box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
@@ -87,13 +76,11 @@
             box-shadow: 0 6px 20px rgba(74, 222, 128, 0.6);
         }
 
-        /* Estilos del botón pequeño de Guardar Local (Verde Claro) */
         .btn-local {
             @apply flex items-center justify-center px-4 py-2 text-base font-bold transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98] text-white shadow-md rounded-full;
             background: linear-gradient(135deg, #34d399, #10b981);
         }
 
-        /* Estilos del botón pequeño de Guardar en Nube (Verde Oscuro) */
         .btn-cloud {
             @apply flex items-center justify-center px-4 py-2 text-base font-bold transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98] text-white shadow-md rounded-full;
             background: linear-gradient(135deg, #059669, #047857);
@@ -123,8 +110,8 @@
 <body class="bg-gray-900 text-white min-h-screen  p-4">
     <div
         class="container bg-gray-800 rounded-xl shadow-2xl p-8 md:p-12 flex flex-col items-center gap-6 border border-gray-700">
-        <h1 class="text-3xl md:text-4xl font-bold text-center mb-2">Generadr de Imágenes Hooligan de Fútbol</h1>
-        <p class="text-center text-gray-400 mb-4">Introduc un prompt o genera uno aleatorio para crear imágenes con
+        <h1 class="text-3xl md:text-4xl font-bold text-center mb-2">Generador de Imágenes Hooligan de Fútbol</h1>
+        <p class="text-center text-gray-400 mb-4">Introduce un prompt o genera uno aleatorio para crear imágenes con
             temática hooligan y estética de ilustración.</p>
 
         <!-- Textarea para el prompt -->
@@ -172,15 +159,12 @@
     </div>
 
     <script type="module">
-        // Variables globales (solo appId necesario para la clave de localStorage)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-        // --- VARIABLE DE ENTORNO COMÚN PARA LA API KEY ---
-        // Se establece como cadena vacía para usar la clave proporcionada por el entorno Canvas.
-        // Cambiar la URL de la API por:
-        const apiUrl = '/api/generate';  // Ruta relativa a tu dominio de Pages
+
+        const apiUrl = '/api/generate';
 
 
 
@@ -193,12 +177,10 @@
         // --- FIREBASE IMPORTS ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        setLogLevel('debug'); // Mantenemos el logging
+        setLogLevel('debug');
 
-        // Elementos del DOM
         const promptInput = document.getElementById('prompt-input');
         const generateBtn = document.getElementById('generate-btn');
         const randomBtn = document.getElementById('random-btn');
@@ -215,7 +197,6 @@
         const galleryContainer = document.getElementById('gallery-container');
         const galleryPlaceholder = document.getElementById('gallery-placeholder');
 
-        // Estado de la aplicación
         let app;
         let auth;
         let db;
@@ -223,7 +204,6 @@
         let currentGeneratedImage = null;
         let currentPrompt = null;
 
-        // Clave única para localStorage
         const STORAGE_KEY = `hooligan_gallery_${appId}`;
 
         // --- FIREBASE INITIALIZATION & AUTH ---
@@ -233,7 +213,6 @@
             db = getFirestore(app);
             auth = getAuth(app);
 
-            // Intentar autenticación
             onAuthStateChanged(auth, async (user) => {
                 if (!user) {
                     if (initialAuthToken) {
@@ -256,14 +235,9 @@
             console.warn('Firebase config is missing. Cloud Save is disabled.');
         }
 
-        // Cargar galería local al inicio
         window.onload = loadGallery;
 
-        // --- GALLERY / LOCAL STORAGE FUNCTIONS (Mantenidas como principal) ---
-
-        /**
-         * Muestra un mensaje temporal al usuario (puede ser de éxito o error).
-         */
+        // --- GALLERY / LOCAL STORAGE FUNCTIONS ---
         function showTemporaryMessage(text, isError = false) {
             errorMessage.textContent = text;
             errorMessage.classList.remove('hidden');
@@ -275,10 +249,6 @@
             }, 3000);
         }
 
-
-        /**
-         * Guarda la imagen generada en localStorage.
-         */
         async function saveImageLocal(prompt, base64Image) {
             try {
                 const storedImages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -301,9 +271,6 @@
             }
         }
 
-        /**
-         * Guarda la imagen en Firebase Firestore (Sujeto al límite de 1MB).
-         */
         async function saveImageCloud(prompt, base64Image) {
             if (!userId || !db) {
                 showTemporaryMessage('Error: Autenticación o base de datos de la nube no lista.', true);
@@ -311,7 +278,6 @@
                 return;
             }
 
-            // Advertencia Visible
             showTemporaryMessage('Guardando en la Nube... (Sujeto al límite de 1MB de Firestore)', false);
 
             try {
@@ -321,7 +287,6 @@
                     image: base64Image,
                     createdAt: serverTimestamp()
                 });
-                // Esto no se ejecutará si falla el límite de tamaño (como esperamos), pero es el camino de éxito.
                 showTemporaryMessage('Imagen guardada en la Nube (Firebase).', false);
                 console.log(`[CLOUD SAVE SUCCESS] Document added.`);
             } catch (error) {
@@ -331,9 +296,6 @@
         }
 
 
-        /**
-         * Carga la galería usando localStorage.
-         */
         function loadGallery() {
             try {
                 const storedImages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -367,17 +329,11 @@
             }
         }
 
-        // --- PROMPT UTILITY FUNCTIONS ---
-
-        /**
-         * Limpia el prompt de cualquier estilo conocido y luego aplica uno nuevo.
-         */
         function injectStyle(prompt, style) {
             const allStyles = [BASE_STYLE, STICKER_STYLE, PHOTOREALISM_STYLE];
             let cleanedPrompt = prompt;
 
             allStyles.forEach(s => {
-                // Limpia el prompt de estilos existentes
                 cleanedPrompt = cleanedPrompt.replace(s.trim(), '').trim();
             });
 
@@ -388,55 +344,41 @@
                 cleanedPrompt = "A fan with a scarf";
             }
 
-            return cleanedPrompt + ", " + style.trim(); // Asegura una coma y espacio
+            return cleanedPrompt + ", " + style.trim();
         }
 
-        // --- GEMINI API UTILITY: Fetch con reintentos para manejar Rate Limits (429) ---
-
-        /**
-         * Realiza una llamada a la API con reintentos y backoff exponencial para manejar
-         * errores 429 (Rate Limit).
-         * @param {string} url - URL del endpoint de la API.
-         * @param {object} options - Opciones de la llamada fetch (method, headers, body).
-         * @param {number} maxRetries - Número máximo de reintentos.
-         * @returns {Promise<Response>} La respuesta de la API.
-         */
         async function fetchWithRetry(url, options, maxRetries = 3) {
             for (let i = 0; i < maxRetries; i++) {
                 try {
                     const response = await fetch(url, options);
 
                     if (response.status === 429 && i < maxRetries - 1) {
-                        const delay = Math.pow(2, i) * 1000 + (Math.random() * 1000); // 1s, 2s, 4s + jitter
+                        const delay = Math.pow(2, i) * 1000 + (Math.random() * 1000);
                         console.warn(`[API RETRY] Límite de tasa alcanzado (429). Reintentando en ${Math.round(delay / 1000)}s...`);
                         await new Promise(resolve => setTimeout(resolve, delay));
-                        continue; // Intentar de nuevo
+                        continue;
                     }
 
                     if (!response.ok && response.status === 429) {
-                        // En caso de fallo 429 persistente o con cuota cero, reportar el error final
+
                         const errorBody = await response.text();
                         console.error(`[API ERROR FINAL] Status ${response.status}`, errorBody);
                         throw new Error(`Error ${response.status}: Cuota de API agotada o límite de tasa excedido.`);
                     }
 
-                    return response; // Retornar en caso de éxito o error no relacionado con 429
+                    return response;
                 } catch (error) {
-                    // Manejar errores de red/conexión
                     console.error(`[API NETWORK ERROR] Intento ${i + 1} fallido:`, error);
                     if (i < maxRetries - 1) {
                         const delay = Math.pow(2, i) * 1000 + (Math.random() * 1000);
                         await new Promise(resolve => setTimeout(resolve, delay));
                         continue;
                     }
-                    throw error; // Lanzar después del fallo final
+                    throw error;
                 }
             }
             throw new Error("La llamada a la API falló después de múltiples reintentos.");
         }
-
-
-        // --- GEMINI API FUNCTIONS (Generación de Imagen actualizada) ---
 
         function showLoading(show) {
             generateBtn.disabled = show;
@@ -471,10 +413,8 @@
                     generationConfig: {
                         responseModalities: ['TEXT', 'IMAGE']
                     },
-                    modelType: 'image' // Indicador para el backend
+                    modelType: 'image'
                 };
-
-                // Uso de la variable global API_KEY
 
                 const response = await fetchWithRetry(apiUrl, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
@@ -483,7 +423,6 @@
                 if (!response.ok) {
                     const errorBody = await response.text();
                     console.error(`[IMAGE API ERROR] Status ${response.status}`, errorBody);
-                    // Mostrar mensaje de cuota o error genérico
                     showTemporaryMessage(`Error API de Imagen (${response.status}). Posiblemente Cuota Agotada. Inténtalo de nuevo.`, true);
                     showLoading(false); return;
                 }
@@ -545,7 +484,7 @@
                         responseMimeType: "application/json",
                         responseSchema: { type: "ARRAY", items: { "type": "STRING" } }
                     },
-                    modelType: 'text' // Indicador para el backend
+                    modelType: 'text'
                 };
 
                 const response = await fetchWithRetry(apiUrl, {
@@ -595,7 +534,6 @@
             try {
                 const systemPrompt = "You are an expert in prompt engineering for text-to-image models. Your goal is to take a simple prompt about 'hooligan' football culture and refine it by adding style details (like 'cartoon illustration, grunge, thick line, high texture, vibrant colors, dramatic lighting, dominant colors: red and white') and camera or composition specifics, so that the image result is spectacular and follows the hooligan and grunge aesthetic. Return ONLY the improved prompt in ENGLISH.";
                 const userQuery = `Improve this prompt: "${originalPrompt}"`;
-                // Uso de la variable global API_KEY
 
                 const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
 
@@ -627,7 +565,6 @@
             try {
                 const systemPrompt = "You are an expert in hooligan football culture illustration and sticker design. Generate ONE unique and visually powerful design concept for a sticker or patch. The concept should describe a composition of 2-3 elements related to hooligans, creating a symbolic scene (example: 'A skull with a scarf blowing in the wind and a smoking flare'). Return ONLY the concept phrase in ENGLISH, without styles or quotes.";
                 const userQuery = "Generate a unique sticker concept for hooligan football.";
-                // Uso de la variable global API_KEY
 
                 const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
 
@@ -649,7 +586,6 @@
             showLoading(true);
 
             if (!prompt || prompt.includes(BASE_STYLE.trim()) || prompt.includes(PHOTOREALISM_STYLE.trim())) {
-                // If current prompt is generic or uses another style, generate a new idea
                 prompt = await generateStickerIdea();
             }
 
@@ -673,7 +609,6 @@
             let prompt = promptInput.value.trim();
             if (!prompt) { showTemporaryMessage('Por favor, introduce un prompt para generar la imagen.', true); return; }
 
-            // Apply base style if no specific style is present
             if (!prompt.includes(BASE_STYLE.trim()) && !prompt.includes(STICKER_STYLE.trim()) && !prompt.includes(PHOTOREALISM_STYLE.trim())) {
                 prompt = injectStyle(prompt, BASE_STYLE);
                 promptInput.value = prompt;
@@ -687,7 +622,6 @@
         stickerBtn.addEventListener('click', handleGenerateStickerClick);
         photorealismBtn.addEventListener('click', handleGeneratePhotorealismClick);
 
-        // Event listener para el botón de "Guardar Localmente"
         saveLocalBtn.addEventListener('click', () => {
             if (currentGeneratedImage && currentPrompt) {
                 saveImageLocal(currentPrompt, currentGeneratedImage);
@@ -696,7 +630,6 @@
             }
         });
 
-        // Event listener para el botón de "Guardar en la Nube"
         saveCloudBtn.addEventListener('click', () => {
             if (currentGeneratedImage && currentPrompt) {
                 saveImageCloud(currentPrompt, currentGeneratedImage);
