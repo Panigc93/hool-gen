@@ -137,6 +137,40 @@
             <button id="photorealism-btn" class="btn btn-fifth w-full sm:w-auto drop-shadow-lg">Generar
                 Fotorrealismo</button>
         </div>
+        <div class="mt-4">
+            <label for="referenceImage" class="block text-sm font-medium text-gray-700 mb-1">
+                🖼️ Imagen de referencia (estilo)
+            </label>
+            <input
+                type="file"
+                id="referenceImage"
+                accept="image/*"
+                class="block w-full text-sm text-gray-500
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-full file:border-0
+                file:text-sm file:font-semibold
+                file:bg-blue-50 file:text-blue-700
+                hover:file:bg-blue-100"
+            />
+
+            <p class="mt-1 text-xs text-gray-500">
+                Sube una imagen para transferir su estilo
+            </p>
+        </div>
+        <div id="imagePreview" class="mt-2 hidden" style="position: relative;">
+            <button
+                id="clear-reference-btn"
+                class="l sm:w-auto"
+                type="button"
+                style="position: absolute; top: 0; right: 0; background-color: white;"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400 hover:text-red-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <line x1="6" y1="6" x2="18" y2="18" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="6" y1="18" x2="18" y2="6" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+            <img id="previewImg" class="max-h-32 rounded-lg" alt="Vista previa">
+        </div>
         <button id="retry-btn" class="btn btn-retry w-full sm:w-auto drop-shadow-lg hidden">🔄 Rehacer Imagen</button>
 
 
@@ -167,17 +201,12 @@
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-
         const apiUrl = '/api/generate';
-
-
 
         // --- ESTILOS DE IMAGEN ---
         const BASE_STYLE = " illustration, comic book style, highly detailed, dynamic lighting, hooligan culture, grunge texture, thick black outlines, high contrast, vibrant colors, dominant colors: red and white, street art style.";
         const STICKER_STYLE = " vector sticker illustration, high saturation, thick black tattoo outlines, clean lines, vibrant colors, limited color palette, primary colors: red and white, street art style, patch design, centered composition, hooligan theme, no photorealism.";
         const PHOTOREALISM_STYLE = " photorealistic, cinematic lighting, 8k, highly detailed, ultra-realistic texture, DSLR photo, high contrast, film grain, gritty, dramatic, dominant colors: red and white, hooligan theme.";
-
 
         // --- FIREBASE IMPORTS ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -211,6 +240,17 @@
         let currentPrompt = null;
 
         const STORAGE_KEY = `hooligan_gallery_${appId}`;
+        async function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    // Solo la data base64 sin metadata de tipo
+                    resolve(reader.result.split(',')[1]);
+                };
+                reader.onerror = (error) => reject(error);
+            });
+        }
 
         // --- FIREBASE INITIALIZATION & AUTH ---
 
@@ -408,21 +448,47 @@
             errorMessage.classList.remove('text-green-500', 'text-red-500');
         }
 
+        const imageInput = document.getElementById('referenceImage');
+        const imageFile = imageInput.files[0];
+        const clearRefBtn = document.getElementById('clear-reference-btn');
+
+        clearRefBtn.addEventListener('click', () => {
+            console.log('[CLEAR REFERENCE] Reference image cleared by user.');
+            imageInput.value = '';
+            imagePreview.classList.add('hidden');
+        });
         async function generateImage(prompt) {
             showLoading(true);
             currentPrompt = prompt;
             currentGeneratedImage = null;
 
+            let finalPrompt = prompt;
+            if (imageFile) {
+                finalPrompt += ', in the style of the uploaded image only, do NOT include any elements from the reference image, only its artistic style';
+            }
             try {
                 const payload = {
                     contents: [{
-                        parts: [{ text: prompt }]
+                        parts: []
                     }],
                     generationConfig: {
                         responseModalities: ['TEXT', 'IMAGE']
                     },
                     modelType: 'image'
                 };
+                payload.contents[0].parts.push({ text: finalPrompt });
+                const imageInput = document.getElementById('referenceImage');
+                const imageFile = imageInput.files[0];
+                
+                if (imageFile) {
+                    const base64Image = await fileToBase64(imageFile);
+                    payload.contents[0].parts.push({
+                    inline_data: {
+                        mime_type: imageFile.type,
+                        data: base64Image
+                    }
+                    });
+                }
 
                 const response = await fetchWithRetry(apiUrl, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
@@ -485,6 +551,18 @@
             } else {
                 showTemporaryMessage('No hay prompt previo para rehacer.', true);
             }
+        });
+        document.getElementById('referenceImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('previewImg');
+                preview.src = e.target.result;
+                document.getElementById('imagePreview').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
         });
 
         async function generateRandomPrompt() {

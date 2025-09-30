@@ -5,6 +5,8 @@ import { config } from 'dotenv'
 config({ path: '.env.local' })
 
 const fastify = Fastify({
+  logger: true,
+  bodyLimit: 10 * 1024 * 1024
 })
 
 await fastify.register(cors, {
