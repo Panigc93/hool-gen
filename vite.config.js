@@ -1,8 +1,7 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-    // Configuración específica para Vercel
-    base: '/', // Importante para Vercel
+    // ❌ ELIMINAR ESTA LÍNEA: base: '/',
 
     server: {
         port: 3000,
@@ -19,8 +18,6 @@ export default defineConfig({
     build: {
         outDir: 'dist',
         emptyOutDir: true,
-        target: 'esnext',
-        // Configuración específica para Vercel
         assetsDir: 'assets',
         rollupOptions: {
             input: {
