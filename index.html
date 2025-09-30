@@ -76,6 +76,16 @@
             box-shadow: 0 6px 20px rgba(74, 222, 128, 0.6);
         }
 
+        .btn-retry {
+            background: linear-gradient(135deg, #fb923c, #ea580c);
+            box-shadow: 0 4px 15px rgba(251, 146, 60, 0.4);
+        }
+
+        .btn-retry:hover {
+            box-shadow: 0 6px 20px rgba(251, 146, 60, 0.6);
+        }
+
+
         .btn-local {
             @apply flex items-center justify-center px-4 py-2 text-base font-bold transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98] text-white shadow-md rounded-full;
             background: linear-gradient(135deg, #34d399, #10b981);
@@ -129,6 +139,8 @@
             <button id="photorealism-btn" class="btn btn-fifth w-full sm:w-auto drop-shadow-lg">Generar
                 Fotorrealismo</button>
         </div>
+        <button id="retry-btn" class="btn btn-retry w-full sm:w-auto drop-shadow-lg hidden">🔄 Rehacer Imagen</button>
+
 
         <!-- Contenedor de la imagen y el spinner -->
         <div id="image-output-section" class="mt-8 w-full">
@@ -196,6 +208,7 @@
         const saveCloudBtn = document.getElementById('save-cloud-btn');
         const galleryContainer = document.getElementById('gallery-container');
         const galleryPlaceholder = document.getElementById('gallery-placeholder');
+        const retryBtn = document.getElementById('retry-btn');
 
         let app;
         let auth;
@@ -295,7 +308,6 @@
             }
         }
 
-
         function loadGallery() {
             try {
                 const storedImages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -386,9 +398,12 @@
             improveBtn.disabled = show;
             stickerBtn.disabled = show;
             photorealismBtn.disabled = show;
+            retryBtn.disabled = show;
+
 
             if (show) {
                 saveButtonWrapper.classList.add('hidden');
+                retryBtn.classList.add('hidden');
                 imageContainer.innerHTML = '';
                 imageContainer.appendChild(spinner);
             }
@@ -436,6 +451,7 @@
                     currentGeneratedImage = imageUrl;
 
                     saveButtonWrapper.classList.remove('hidden');
+                    retryBtn.classList.remove('hidden');
                     console.log('[SAVE BUTTON] Botones de Guardar mostrados.');
 
                     const imgElement = new Image();
@@ -470,6 +486,13 @@
                 showLoading(false);
             }
         }
+        retryBtn.addEventListener('click', () => {
+            if (currentPrompt) {
+                generateImage(currentPrompt);
+            } else {
+                showTemporaryMessage('No hay prompt previo para rehacer.', true);
+            }
+        });
 
         async function generateRandomPrompt() {
             showLoading(true);
